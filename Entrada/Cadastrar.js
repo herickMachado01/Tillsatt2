@@ -16,15 +16,13 @@ const Cadastrar = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const validatePassword = (password) => {
-    // Verifica se a senha tem pelo menos 8 caracteres, contém pelo menos uma letra maiúscula, um número e um caractere especial
     const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(password);
   };
 
   const validateCPF = (cpf) => {
-    // Remove pontos, traços e espaços do CPF
     const cleanedCPF = cpf.replace(/\D+/g, '');
-    const regex = /^\d{11}$/; // Aceita apenas 11 dígitos numéricos
+    const regex = /^\d{11}$/;
     return regex.test(cleanedCPF);
   };
 
@@ -37,30 +35,26 @@ const Cadastrar = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
-    setErrorMessage(''); // Reset the error message
+    setErrorMessage('');
 
-    // Check if all fields are filled
     if (!name || !email || !phone || !ddd || !cpf || !password) {
       setErrorMessage('Todos os campos devem ser preenchidos');
       return;
     }
 
-    // Check if the CPF is valid
     if (!validateCPF(cpf)) {
       setErrorMessage('CPF inválido');
       return;
     }
 
-    // Check if the password is valid
     if (!validatePassword(password)) {
       setErrorMessage('A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, um número e um caractere especial');
       return;
     }
 
     try {
-      await handleLogout(); // Ensure the user is logged out
+      await handleLogout();
 
-      // Check if email already exists
       const emailQuery = new Parse.Query(Parse.User);
       emailQuery.equalTo('email', email);
       const existingEmailUser = await emailQuery.first();
@@ -74,15 +68,15 @@ const Cadastrar = ({ navigation }) => {
       user.set('email', email);
       user.set('password', password);
       user.set('name', name);
-      user.set('phone', `${ddd}${phone}`); // Combine DDD and phone number
-      user.set('cpf', cpf.replace(/\D+/g, '')); // Store CPF without non-numeric characters
+      user.set('phone', `${ddd}${phone}`);
+      user.set('cpf', cpf.replace(/\D+/g, ''));
 
       await user.signUp();
       navigation.navigate('Login');
     } catch (error) {
-      if (error.code === 209) { // Invalid session token error code
+      if (error.code === 209) {
         await handleLogout();
-        handleRegister(); // Retry registration after logging out
+        handleRegister();
       } else {
         setErrorMessage('Erro ao cadastrar. Tente novamente.');
         console.error('Error:', error);
@@ -94,12 +88,7 @@ const Cadastrar = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <View style={{ flex: 1, marginHorizontal: 22 }}>
         <View style={{ marginVertical: 22 }}>
-          <Text style={{ fontSize: 22, fontWeight: 'bold', marginVertical: 12, color: COLORS.black }}>
-            Criar conta
-          </Text>
-          <Text style={{ fontSize: 16, color: COLORS.black }}>
-            Faça parte da nossa comunidade!
-          </Text>
+          {/* Removido título e texto adicional */}
         </View>
 
         <View style={{ marginBottom: 12 }}>
@@ -331,12 +320,12 @@ const Cadastrar = ({ navigation }) => {
         </View>
 
         <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 22 }}>
-          <Text style={{ fontSize: 16, color: COLORS.black }}>Já tem uma conta?</Text>
+          <Text style={{ fontSize: 14, color: COLORS.black }}>Já tem uma conta?</Text>
           <Pressable
             onPress={() => navigation.navigate("Login")}
           >
             <Text style={{
-              fontSize: 16,
+              fontSize: 14,
               color: COLORS.primary,
               fontWeight: "bold",
               marginLeft: 6
